@@ -27,7 +27,7 @@ cv2.setNumThreads(2)
 # ----------------------------
 # Configuración de rutas
 # ----------------------------
-BASE_DIR = Path('/home/machina/Desktop/computer vision/yolo_pi_luxonis')
+BASE_DIR = Path('/home/machina/Desktop/computer vision/computer-vision-yolo-pi-luxonis')
 STOP_FILE = BASE_DIR / 'STOP_YOLO_PI_LUXONIS.flag'
 LOG_FILE = BASE_DIR / 'YOLO_PI_LUXONIS_runtime.log'
 
