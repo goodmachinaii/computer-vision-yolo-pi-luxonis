@@ -1,35 +1,56 @@
-# YOLO PI LUXONIS (Sin Coral)
+# YOLO PI LUXONIS (sin Coral)
 
-Versión enfocada en estabilidad y simplicidad:
-- **Luxonis OAK**: RGB + profundidad.
-- **Raspberry Pi (CPU host)**: detección YOLOv4-tiny.
+Pipeline de visión por computador para **Raspberry Pi + Luxonis OAK**, orientado a operación estable local.
 
-## Características
-- Detección de objetos + etiqueta + confianza.
-- Distancia aproximada **Z** usando depth de Luxonis.
-- Botones en ventana:
-  - **STOP**
-  - **EXIT**
-- Teclas: `ESC` o `q`.
-- Watchdog y reinicio automático de pipeline cuando no llegan frames.
+## Qué hace
+- Captura **RGB** desde Luxonis OAK.
+- Calcula **profundidad estéreo** en Luxonis.
+- Ejecuta detección de objetos en la Pi con **YOLOv4-tiny (OpenCV DNN)**.
+- Fusiona detección + profundidad para mostrar distancia aproximada **Z** por objeto.
 
-## Archivo principal
-- `YOLO_PI_LUXONIS.py`
+## Método técnico (detección + profundidad)
+1. **RGB stream**: `ColorCamera` en OAK → host (Pi).
+2. **Depth stream**: `Mono left/right + StereoDepth` en OAK → mapa de profundidad en mm.
+3. **Detección host**: OpenCV DNN (`readNetFromDarknet`) sobre frame RGB.
+4. **Fusión espacial**: para cada bounding box se toma el centro y se proyecta al mapa depth para estimar `Z`.
 
-## Dependencias
-- Python con `opencv-python` y `depthai`.
-- Modelos YOLO en host (ruta usada por script):
+## Funcionalidades de operación
+- Botones en UI: **STOP** y **EXIT**.
+- Teclas rápidas: `ESC` / `q`.
+- Watchdog: reinicia pipeline si dejan de llegar frames.
+- Logs en runtime para diagnóstico.
+
+## Hardware requerido
+- Raspberry Pi 4 (recomendado 8GB, también funciona con menos).
+- Cámara Luxonis OAK (con sensores estéreo activos).
+- Cable USB de buena calidad (datos + energía estables).
+
+## Software requerido
+- Python con:
+  - `depthai`
+  - `opencv-python`
+  - `numpy`
+- Modelos YOLO en host (rutas usadas por script):
   - `/home/machina/.openclaw/workspace/coral/models/yolov4-tiny.cfg`
   - `/home/machina/.openclaw/workspace/coral/models/yolov4-tiny.weights`
   - `/home/machina/.openclaw/workspace/coral/models/coco.names`
 
-## Ejecución manual
+## Archivos principales
+- `YOLO_PI_LUXONIS.py`
+- `launchers/START.desktop` (doble click)
+
+## Ejecución
+### Doble click
+- Abrir: `launchers/START.desktop`
+
+### Manual
 ```bash
 python YOLO_PI_LUXONIS.py
 ```
 
-## Notas de estabilidad
-Si hay congelamientos/cierres, revisar primero reconexiones USB de la OAK:
+## Troubleshooting rápido
+Si hay congelamientos o cierres, revisar reconexiones USB:
 ```bash
-dmesg | tail -n 100
+dmesg | tail -n 120
 ```
+Si aparecen `USB disconnect` en la OAK, el problema suele ser de enlace/energía USB, no del modelo.

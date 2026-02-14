@@ -1,0 +1,7 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=START YOLO PI LUXONIS
+Exec=/bin/bash -lc 'cd "/home/machina/Desktop/computer vision/computer-vision-yolo-pi-luxonis" && source /home/machina/.openclaw/workspace/.venv-luxonis/bin/activate && python YOLO_PI_LUXONIS.py'
+Icon=camera-video
+Terminal=true
